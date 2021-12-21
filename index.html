@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>WebScanningProject</title>
+    <script src="Resources/dynamsoft.webtwain.initiate.js"></script>
+    <script src="Resources/dynamsoft.webtwain.config.js"></script>
+</head>
+
+<body>
+    <input type="button" value="Scan" onclick="AcquireImage();" />
+    <input type="button" value="Upload" onclick="UploadAsPDF();" />
+    <div id="dwtcontrolContainer"></div>
+    <script type="text/javascript">
+        var DWObject;
+
+        function Dynamsoft_OnReady() {
+            DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
+        }
+
+        function AcquireImage() {
+            if (DWObject) {
+                if (Dynamsoft.Lib.env.bMobile) {
+                    DWObject.LoadImageEx('', 5,
+                        function() {
+                            console.log('success');
+                        },
+                        function(errCode, error) {
+                            alert(error);
+                        }
+                    );
+                } else {
+                    DWObject.SelectSource(function() {
+                            DWObject.OpenSource();
+                            DWObject.AcquireImage();
+                        },
+                        function() {
+                            console.log("SelectSource failed!");
+                        }
+                    );
+                }
+            }
+        }
+
+        function UploadAsPDF() {
+            var url = Dynamsoft.Lib.detect.ssl ? "https://" : "http://";
+            url += location.hostname;
+            var path = location.pathname.substring(0, location.pathname.lastIndexOf("/") + 1);
+            url += location.port === "" ? path : ":" + location.port + path;
+            url += "saveUploadedPDF.php";
+            var indices = [];
+            if (DWObject) {
+                if (DWObject.HowManyImagesInBuffer === 0) {
+                    console.log("There is no image to upload!");
+                    return;
+                }
+                DWObject.SelectAllImages();
+                indices = DWObject.SelectedImagesIndices;
+                DWObject.HTTPUpload(
+                    url,
+                    indices,
+                    Dynamsoft.DWT.EnumDWT_ImageType.IT_PDF,
+                    Dynamsoft.DWT.EnumDWT_UploadDataFormat.Binary,
+                    "HelloWorld.pdf",
+                    function() {
+                        //The server response is empty!
+                        console.log("Successfully uploaded!")
+                    },
+                    function(errCode, errString, response) {
+                        console.log(errString);
+                    }
+                );
+            }
+        }
+    </script>
+</body>
+
+</html>

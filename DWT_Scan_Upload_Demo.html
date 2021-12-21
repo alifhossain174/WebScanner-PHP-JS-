@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Scan, Load, Upload | Dynamic Web TWAIN SDK | Dynamsoft</title>
+    <meta http-equiv="description" content="The sample demonstrates how to scan documents or import local images in browsers with Dynamic Web TWAIN, and then upload them in various ways."
+    />
+    <script src="Resources/dynamsoft.webtwain.config.js"></script>
+    <script src="Resources/dynamsoft.webtwain.initiate.js"></script>
+    <script src="Resources/addon/dynamsoft.webtwain.addon.pdf.js"></script>
+    <link rel="stylesheet" href="Style/ds.demo.css">
+</head>
+
+<body>
+    <div id="tipTop">
+        <span onclick="this.parentElement.style.display='none'" class="close">&times;</span>
+        <p>This demo only works on modern browsers on Windows like Chrome 27+ &amp; Firefox 27+ and Edge &amp; IE 11</p>
+    </div>
+    <div id="header">
+        <span onclick="this.parentElement.style.display='none'" class="close">&times;</span>
+        <div class="container">
+            <div id="headerTop" class="row">
+                <div class="ct-lt fl clearfix">
+                    <div class="logo mr20 fl">
+                        <img src="Style/Images/logo-dwt-56x56.png" alt="Logo"> </div>
+                    <div class="fl">
+                        <div class="linkGroup">
+                            <a target="_blank" class="bluelink ds-font-size-14" href="https://www.dynamsoft.com/?product=dwt&utm_source=code-gallery">Dynamsoft</a>
+                            <span> / </span>
+                            <a target="_blank" class="bluelink" href="https://www.dynamsoft.com/web-twain/overview/?product=dwt&utm_source=code-gallery">Dynamic Web TWAIN</a>
+                            <span> / </span>
+                            <a target="_blank" class="bluelink" href="https://www.dynamsoft.com/web-twain/resources/code-gallery/?product=dwt&utm_source=code-gallery">Code Gallery</a>
+                            <span> / </span>
+                        </div>
+                        <h1>Scan Documents + Upload</h1>
+                    </div>
+                </div>
+                <div class="ct-rt fr">
+                    <a target="_blank" href="https://www.dynamsoft.com/web-twain/downloads/?product=dwt&utm_source=code-gallery" class="btn lgBtn bgOrange">Download SDK</a>
+                </div>
+            </div>
+            <div id="headerBtm" class="row">The demo demonstrates how to scan documents or import local images in browsers with Dynamic Web TWAIN, and then
+                upload them in various ways.</div>
+        </div>
+    </div>
+    <div id="main">
+        <div class="container">
+            <div class="ct-lt clearfix">
+                <!-- dwtcontrolContainer is the default div id for Dynamic Web TWAIN control.
+             If you need to rename the id, you should also change the id in the dynamsoft.webtwain.config.js accordingly. -->
+                <div id="dwtcontrolContainer"></div>
+            </div>
+            <div class="ct-rt">
+                <div class="content clearfix">
+                    <div class="section">
+                        <input type="button" value="Scan" onclick="AcquireImage();" class="btn mr20" />
+                        <input type="button" value="Open a local file" onclick="LoadImages();" class="btn" />
+                        <div class="item mt10 radioGroup">
+                            Upload file format:
+                            <label for="jpeg" style="margin-right: 12px;">
+                                <input type="radio" value="jpg" name="ImageType" id="jpeg" checked="checked" /> JPG
+                            </label>
+                            <label for="tiff" style="margin-right: 12px;">
+                                <input type="radio" value="tif" name="ImageType" id="tiff" /> TIF
+                            </label>
+                            <label for="pdf">
+                                <input type="radio" value="pdf" name="ImageType" id="pdf" /> PDF
+                            </label>
+                        </div>
+                        <div class="mt10">
+                            <div>
+                                <label>Script Language :</label>
+                                <select size="1" id="ddlLanguages" class="w60p fr" onchange="languageSelected();"></select>
+                                <div id="tipInfo">
+                                    <p>Make sure your servrer supports the language you choose!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="extra-fields-div-id" class="section">
+                        <div>
+                            <label>HTTP Form Fields: </label>
+                            <div type="text" class="addBtn w60p fr" onclick="addAField()">&plus;</div>
+                        </div>
+                        <br />
+                        <div id="div-extra-fields" class="" style="display:none; max-height:70px;">
+                            <div class="div-fields-item">
+                                <input type="text" class="w47p mb15" placeholder="Field Name" /> :
+                                <input type="text" class="w47p mb15" placeholder="Field Value" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section" style="width:100%; float:left;">
+                        <div style="width:32%;float:left; border-right: solid 1px #e7e7e7;">
+                            <input type="button" value="Upload" onclick="UploadImage();" class="mt10 mb10 btn bgBlue" style="width:100px;" />
+                        </div>
+                        <div style="width:67%;float:left; padding-left:5%;">
+                            <label>
+                                <input type="checkbox" value="quiet" id="quietScan" />Hide progress bar on uploading</label>
+                            <br />
+                            <label>
+                                <input type="checkbox" value="directly" id="uploadDirectly" />Direct upload from file system</label>
+                        </div>
+                    </div>
+                    <div class="section" style="width:100%; float:left;">
+                        <div>Uploaded Files</div>
+                        <div id="resultWrap">
+                            <table id='div-uploadedFile'>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <span onclick="this.parentElement.style.display='none'" class="close">&times;</span>
+        <div class="container">
+            <div id="footerTop" class="row">
+                <div class="item contact">
+                    <strong class="fc4">Contact Us</strong>
+                    <ul>
+                        <li>
+                            <a class="graylink" href="mailto:support@dynamsoft.com">support@dynamsoft.com</a>
+                        </li>
+                        <li>
+                            <a target="_blank" class="graylink" href="https://www.dynamsoft.com/company/contact/?product=dwt&utm_source=code-gallery">Live Chat</a> /
+                            <a target="_blank" class="graylink" href="https://www.dynamsoft.com/company/contact/?product=dwt&utm_source=code-gallery">Submit a Form</a>
+                        </li>
+                        <li>1-604-605-5491 (Toll-Free)</li>
+                    </ul>
+                </div>
+                <div class="item features">
+                    <strong class="fc4">Features Demonstrated</strong>
+                    <ul class="org-li">
+                        <li>Scan documents &amp; load local Images</li>
+                        <li>Rasterize and load local PDF files</li>
+                        <li>Upload images to the server</li>
+                    </ul>
+                </div>
+                <div class="item license">
+                    <strong class="fc4">License Required</strong>
+                    <ul class="org-li">
+                        <li>Core SDK licenses (Windows)</li>
+                        <li>Core SDK licenses for Mac/Linux (if needed)</li>
+                        <li>Add-on License for PDF Rasterizer (if needed)</li>
+                        <li>
+                            <a class="bluelink" href="mailto:sales@dynamsoft.com">Contact Dynamsoft Sales</a>&nbsp;
+                            <span class="fcBlue"> | </span>&nbsp;
+                            <a target="_blank" class="bluelink" href="https://www.dynamsoft.com/store/dynamic-web-twain/#DynamicWebTWAIN?product=dwt&utm_source=code-gallery">Visit Online Store</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="footerBtm" class="row">
+                <div class="ct-lt tc fl">&copy; 2003 -
+                    <script>document.write((new Date()).getFullYear());</script> Dynamsoft. All rights reserved.
+                    <a href="https://www.dynamsoft.com/PrivacyStatement.aspx?product=dwt&utm_source=code-gallery">Privacy Statement</a> /
+                    <a href="https://www.dynamsoft.com/SiteMap.html?product=dwt&utm_source=code-gallery">Site Map</a>
+                </div>
+                <div class="ct-rt tr fr">
+                    <a href="https://www.dynamsoft.com/?product=dwt&utm_source=code-gallery">Home</a> /
+                    <a href="https://www.dynamsoft.com/Support/How-to-purchase-Dynamsoft-products.aspx?product=dwt&utm_source=code-gallery">Purchase</a> /
+                    <a href="https://www.dynamsoft.com/Support/Support.aspx?product=dwt&utm_source=code-gallery">Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var target = document.getElementById('ddlLanguages');
+        target.onmouseover = function () {
+            document.getElementById('tipInfo').style.display = 'block';
+        }
+        target.onmouseout = function () {
+            document.getElementById('tipInfo').style.display = 'none';
+        }
+    </script>
+    <script src="Scripts/script.js"></script>
+</body>
+
+</html>
